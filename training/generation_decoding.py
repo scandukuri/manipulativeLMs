@@ -35,7 +35,7 @@ def main():
     dataset = load_dataset('csv', data_files={'test': os.path.join(OUT_DIR,'tmp/test.csv')})
     tokenizer = AutoTokenizer.from_pretrained(args.model_directory)
     
-    AutoModel = AutoModelForCausalLM if 'gpt' in args.model_directory else AutoModelForSeq2SeqLM
+    AutoModel = AutoModelForCausalLM if 'gpt' or 'alpaca' in args.model_directory else AutoModelForSeq2SeqLM
     
     model = AutoModel.from_pretrained(args.model_directory).to('cuda')
     tokenized_datasets = dataset.map(lambda x: preprocess(x, tokenizer, args.format_string), batched=True)
@@ -45,7 +45,13 @@ def main():
     out_df[args.target_name + '_generated'] = decode(args, out_df, 
                                                      model, tokenizer, 
                                                      skip_special_tokens=args.skip_special_tokens, 
-                                                     remove_history=('gpt' in args.model_directory))
+                                                     remove_history=('gpt' or 'alpaca' in args.model_directory))
+                                                    # this is a temp fix:
+                                                    # remove_history conditional should depend on seq2seq vs causal-lm, 
+                                                    # not the best idea to list out every model type which needs history removal
+                                                    # 
+                                                    # to fix, add --architecture as an argument as done in generation_training.py
+                                                    # then, remove_history=(args.architecture == 'causal-lm')
     out_df.to_csv( os.path.join(args.output, f'test_generations_beams{args.beams}_p{args.top_p}_k{args.top_k}_temp{args.temperature}.csv') )
         
 if __name__=='__main__':
