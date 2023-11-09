@@ -131,6 +131,8 @@ if __name__=='__main__':
                 model='gpt'
             elif 't5' in fn:
                 model='t5'
+            elif 'alpaca' in fn:
+                model='alpaca'
 
             data[i] = results
             data[i]['decoding'] = typ
