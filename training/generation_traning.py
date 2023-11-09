@@ -79,7 +79,7 @@ def format_str_to_savefile_name(format_str):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_checkpoint', type=str, default='t5-small', choices=['gpt2', 't5-small', 'facebook/bart-large'])
+    parser.add_argument('--model_checkpoint', type=str, default='t5-small', choices=['gpt2', 't5-small', 'facebook/bart-large', 'alpaca-7b'])
     parser.add_argument('--architecture', default='', choices=['seq2seq', 'causal-lm'])
     parser.add_argument('--input', type=str, help='path to input file (MIC dataset)')
     parser.add_argument('--output', type=str, default = 'results', help='path to directory for outputting results')
@@ -110,7 +110,7 @@ def main():
     
     # configure for architecture
     if args.architecture == '':
-        if 'gpt' in args.model_checkpoint:
+        if 'gpt' or 'alpaca' in args.model_checkpoint:
             args.architecture = 'causal-lm'
         elif ('bart' in args.model_checkpoint) or ('t5' in args.model_checkpoint):
             args.architecture = 'seq2seq'
