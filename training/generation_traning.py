@@ -110,7 +110,7 @@ def main():
     
     # configure for architecture
     if args.architecture == '':
-        if 'gpt' or 'alpaca' in args.model_checkpoint:
+        if 'gpt' in args.model_checkpoint or 'alpaca' in args.model_checkpoint:  # adjust when adding new causal-lm types
             args.architecture = 'causal-lm'
         elif ('bart' in args.model_checkpoint) or ('t5' in args.model_checkpoint):
             args.architecture = 'seq2seq'
