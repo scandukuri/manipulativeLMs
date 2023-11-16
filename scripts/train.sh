@@ -14,14 +14,14 @@
 
 
 
-__conda_setup="$('/scr/kanishkg/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+__conda_setup="$('/scr/jphilipp/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
 	    eval "$__conda_setup"
     else
 	if [ -f "/scr/jphilipp/miniconda3/etc/profile.d/conda.sh" ]; then
 		. "/scr/jphilipp/miniconda3/etc/profile.d/conda.sh"
 	else
-		export PATH="/scr/kanishkg/miniconda3/bin:$PATH"
+		export PATH="/scr/jphilipp/miniconda3/bin:$PATH"
 	fi
 fi
 unset __conda_setup
