@@ -16,26 +16,26 @@
 
 __conda_setup="$('/scr/jphilipp/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
-	    eval "$__conda_setup"
+            eval "$__conda_setup"
     else
-	if [ -f "/scr/jphilipp/miniconda3/etc/profile.d/conda.sh" ]; then
-		. "/scr/jphilipp/miniconda3/etc/profile.d/conda.sh"
-	else
-		export PATH="/scr/jphilipp/miniconda3/bin:$PATH"
-	fi
+        if [ -f "/scr/jphilipp/miniconda3/etc/profile.d/conda.sh" ]; then
+                . "/scr/jphilipp/miniconda3/etc/profile.d/conda.sh"
+        else
+                export PATH="/scr/jphilipp/miniconda3/bin:$PATH"
+        fi
 fi
 unset __conda_setup
 
 #
-pip3 install torch transformers peft datasets nltk os csv json random tqdm json bert_score sacrebleu rouge_score glob
+pip3 install wandb torch transformers peft datasets nltk tqdm bert_score sacrebleu rouge_score
 
 # Run your script
-wandb login --relogin API_KEY
-cd /scr/jphilipp/
+wandb login --relogin 0242cef7ea759b3e7b2ff2fab0b7ddf5997f57f8
+cd /scr/jphilipp/manipulativeLMs/
 CUDA_VISIBLE_DEVICES=0,1,2,3
-torchrun --standalone \ 
+torchrun --standalone \
     --nproc_per_node=4 \
-    manipulativeLMs/training/generation_traning.py \ 
+    training/generation_traning.py \
     --model_checkpoint 'alpaca_7b' --architecture 'causal-lm' \
-    --input 'data/normbank/normbank.csv' --output 'normbank-alpaca_7b/' \
+    --input 'data/normbank/normbank.csv' --output 'models/normbank-alpaca_7b/' \
     --save_total_limit 10 --save_steps 1000
