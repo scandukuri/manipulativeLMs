@@ -36,4 +36,6 @@ CUDA_VISIBLE_DEVICES=0,1,2,3
 torchrun --standalone \ 
     --nproc_per_node=4 \
     manipulativeLMs/training/generation_traning.py \ 
-    --model_checkpoint 'alpaca_7b' --architecture 'causal-lm' --input 'data/normbank/normbank.csv' --output 'normbank-alpaca_7b/'
+    --model_checkpoint 'alpaca_7b' --architecture 'causal-lm' \
+    --input 'data/normbank/normbank.csv' --output 'normbank-alpaca_7b/' \
+    --save_total_limit 10 --save_steps 1000

@@ -213,7 +213,8 @@ def main():
         num_train_epochs=args.epochs,
         fp16=False,
         seed=args.seed,
-        save_strategy='epoch',
+        save_strategy='steps',
+        save_steps=args.save_steps,
         report_to="wandb"
     )
     
