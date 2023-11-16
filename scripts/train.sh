@@ -26,12 +26,12 @@ if [ $? -eq 0 ]; then
 fi
 unset __conda_setup
 
-conda activate tinytom
-
+#
+pip3 install torch transformers peft datasets nltk os csv json random tqdm json bert_score sacrebleu rouge_score glob
 
 # Run your script
-wandb login --relogin 0242cef7ea759b3e7b2ff2fab0b7ddf5997f57f8
-cd /afs/cs.stanford.edu/u/jphilipp/research_projects/social_tuning/
+wandb login --relogin API_KEY
+cd /scr/jphilipp/
 CUDA_VISIBLE_DEVICES=0,1,2,3
 torchrun --standalone \ 
     --nproc_per_node=4 \
