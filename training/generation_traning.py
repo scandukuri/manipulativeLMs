@@ -1,4 +1,5 @@
 from common import *
+import os
 from peft import (
     prepare_model_for_int8_training,
     LoraConfig,
@@ -7,12 +8,6 @@ from peft import (
 )
 
 
-# TRAINING HYPERPARAMS
-EPOCHS = 1  # from NormBank paper
-LEARNING_RATE = 3e-5  # from NormBank paper
-BATCH_SIZE = 16  # from NormBank paper
-MICRO_BATCH_SIZE = 4  # assume 4 GPUs available
-GRADIENT_ACCUMULATION_STEPS = BATCH_SIZE // MICRO_BATCH_SIZE
 
 # LoRA HYPERPARAMS
 LORA_R = 8
@@ -23,7 +18,10 @@ TARGET_MODULES = [
     "v_proj",
 ]
 
-
+# Weights and Biases Reporting
+os.environ["WANDB_PROJECT"] = "manipulativeLMs" # name your W&B project 
+os.environ["WANDB_LOG_MODEL"] = "checkpoint" # log all model checkpoints
+os.chdir('/scr/jphilipp/')
 
 class Seq2SeqTrainerLogger(Seq2SeqTrainer):
     def __init__(self, logfile, *args, **kwargs):
@@ -104,7 +102,7 @@ def format_str_to_savefile_name(format_str):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_checkpoint', type=str, default='t5-small', choices=['gpt2', 't5-small', 'facebook/bart-large', 'alpaca-7b'])
+    parser.add_argument('--model_checkpoint', type=str, default='t5-small', choices=['gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b'])
     parser.add_argument('--architecture', default='', choices=['seq2seq', 'causal-lm'])
     parser.add_argument('--input', type=str, help='path to input file (MIC dataset)')
     parser.add_argument('--output', type=str, default = 'results', help='path to directory for outputting results')
@@ -115,7 +113,8 @@ def main():
     parser.add_argument('--target_name', type=str, default='constraints', help='the name of the target column to write in the out file')
     parser.add_argument('--maxlen', type=int, default=512, help='maximum length of the tokenized input sentence pair : if greater than "maxlen", the input is truncated and else if smaller, the input is padded')
     parser.add_argument('--batchsize', type=int, default=16)
-    parser.add_argument('--epochs', type=int, default=20)
+    parser.add_argument('--microbatchsize', type=int, default=4)
+    parser.add_argument('--epochs', type=int, default=1)  # adjusted from 20 -> 1 for generation task
     parser.add_argument('--lr', type=float, default=3e-5)
     parser.add_argument('--beams', type=int, default=0)
     parser.add_argument('--temperature', type=float, default=1.0)
@@ -129,7 +128,7 @@ def main():
     args = parser.parse_args()
 
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    os.environ["CUDA_VISIBLE_DEVICES"]=str(args.gpu)
+    #os.environ["CUDA_VISIBLE_DEVICES"]=str(args.gpu)
     
     set_seed(args.seed)
     
@@ -160,9 +159,9 @@ def main():
     
     dataset = load_dataset('csv', data_files={'train': os.path.join(OUT_DIR,'tmp/train.csv'), 'test': os.path.join(OUT_DIR,'tmp/test.csv'), 'validation': os.path.join(OUT_DIR,'tmp/dev.csv')})
     print('train size:',len(dataset['train']))
-    tokenizer = AutoTokenizer.from_pretrained(args.model_checkpoint)
+    tokenizer = AutoTokenizer.from_pretrained('models/' + str(args.model_checkpoint))
     
-    model = AutoModel.from_pretrained(args.model_checkpoint)
+    model = AutoModel.from_pretrained('models/' + str(args.model_checkpoint))
     
     # add special tokens to tokenizer
     special_tokens = list(
@@ -206,14 +205,16 @@ def main():
         output_dir=os.path.join(OUT_DIR, "checkpoints"),
         evaluation_strategy = "epoch",
         learning_rate=args.lr,
-        per_device_train_batch_size=args.batchsize,
-        per_device_eval_batch_size=args.batchsize,
+        per_device_train_batch_size=args.microbatchsize,
+        per_device_eval_batch_size=args.microbatchsize,
+        gradient_accumulation_steps=args.batchsize//args.microbatchsize,  # check on this again later
         weight_decay=args.weight_decay,
         save_total_limit=args.save_total_limit,
         num_train_epochs=args.epochs,
         fp16=False,
         seed=args.seed,
-        save_strategy='epoch'
+        save_strategy='epoch',
+        report_to="wandb"
     )
     
     ## LoRA configuration with hyperparameters
@@ -227,6 +228,7 @@ def main():
         inference_mode=False
     )
     model = get_peft_model(model, config)
+    model.print_trainable_parameters()
 
 
     trainer = Trainer(
