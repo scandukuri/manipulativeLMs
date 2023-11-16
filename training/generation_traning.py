@@ -1,4 +1,29 @@
 from common import *
+from peft import (
+    prepare_model_for_int8_training,
+    LoraConfig,
+    get_peft_model,
+    get_peft_model_state_dict,
+)
+
+
+# TRAINING HYPERPARAMS
+EPOCHS = 1  # from NormBank paper
+LEARNING_RATE = 3e-5  # from NormBank paper
+BATCH_SIZE = 16  # from NormBank paper
+MICRO_BATCH_SIZE = 4  # assume 4 GPUs available
+GRADIENT_ACCUMULATION_STEPS = BATCH_SIZE // MICRO_BATCH_SIZE
+
+# LoRA HYPERPARAMS
+LORA_R = 8
+LORA_ALPHA = 16
+LORA_DROPOUT = 0.05
+TARGET_MODULES = [
+    "q_proj",
+    "v_proj",
+]
+
+
 
 class Seq2SeqTrainerLogger(Seq2SeqTrainer):
     def __init__(self, logfile, *args, **kwargs):
@@ -191,6 +216,19 @@ def main():
         save_strategy='epoch'
     )
     
+    ## LoRA configuration with hyperparameters
+    config = LoraConfig(
+        r=LORA_R,
+        lora_alpha=LORA_ALPHA,
+        target_modules=TARGET_MODULES,
+        lora_dropout=LORA_DROPOUT,
+        bias="none",
+        task_type="CAUSAL_LM",
+        inference_mode=False
+    )
+    model = get_peft_model(model, config)
+
+
     trainer = Trainer(
         model,
         training_args,
