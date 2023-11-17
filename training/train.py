@@ -7,7 +7,7 @@ from peft import (
     get_peft_model_state_dict,
 )
 from datasets import Features, Value, Dataset, DatasetDict
-from transformers import LlamaForCausalLM, LlamaTokenizer, AutoTokenizer
+from transformers import LlamaForCausalLM, LlamaTokenizer, AutoTokenizer, LlamaForCausalLM
 
 
 
@@ -105,8 +105,8 @@ def format_str_to_savefile_name(format_str):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--node_dir', type=str, default='/scr/jphilipp/manipulativeLM-nodecontents', help='path to all data or model directories on the node (parent directory for eg alpaca_7b or normbank data)')
-    parser.add_argument('--model_checkpoint', type=str, default='alpaca_7b', choices=['gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b'])
-    parser.add_argument('--architecture', default='', choices=['seq2seq', 'causal-lm'])
+    parser.add_argument('--model_checkpoint', type=str, default='better-base', choices=['gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b', 'better-base', '7B'])
+    parser.add_argument('--architecture', default='causal-lm', choices=['seq2seq', 'causal-lm'])
     parser.add_argument('--input', type=str, default='normbank/normbank.csv', help='path to input file (MIC dataset)')
     parser.add_argument('--output', type=str, default = 'results', help='path to directory for outputting results')
     parser.add_argument('--seed', type=int, default=1, help='random seed for replicability')
@@ -193,10 +193,16 @@ def main():
     # model setup
     AutoModel = AutoModelForCausalLM if (args.architecture == 'causal-lm') else AutoModelForSeq2SeqLM
     breakpoint()
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
-    tokenizer = LlamaTokenizer.from_pretrained(MODEL_DIR)
+    # meta-llama/Llama-2-7b
+    # '/scr/jphilipp/manipulativeLM-nodecontents'
+    # tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, cache_dir=MODEL_DIR)
+    model = AutoModelForCausalLM.from_pretrained('roneneldan/TinyStories-1M' ,cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
+    tokenizer = AutoTokenizer.from_pretrained("EleutherAI/gpt-neo-125M", cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
     breakpoint()
-    model = AutoModel.from_pretrained(MODEL_DIR)
+    model = LlamaForCausalLM.from_pretrained('agi-css/better-base', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents',  load_in_8bit=True)
+    tokenizer = LlamaTokenizer.from_pretrained('agi-css/better-base', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents', load_in_8bit=True)
+    model = AutoModel.from_pretrained('agi-css/better-base', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents',  load_in_8bit=True)
 
 
     

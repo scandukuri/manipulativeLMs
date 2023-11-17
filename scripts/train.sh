@@ -40,6 +40,9 @@ cd ~/research_projects/social_tuning/manipulativeLMs/training
 # todo: change confid below to make input output commands shorter
 torchrun --standalone \
     --nproc_per_node=4 train.py \
-    --node_dir '/scr/jphilipp/manipulativeLM-nodecontents' --model_checkpoint 'alpaca_7b' --architecture 'causal-lm' \
-    --input 'normbank/normbank.csv' --output 'alpaca_7b/' \
+    --node_dir '/scr/jphilipp/manipulativeLM-nodecontents' --model_checkpoint 'better-base' --architecture 'causal-lm' \
+    --input 'normbank/normbank.csv' --output 'better-base/' \
     --save_total_limit 10 --save_steps 1000
+
+
+#      git clone https://huggingface.co/agi-css/better-base
