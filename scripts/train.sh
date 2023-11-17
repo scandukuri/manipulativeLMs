@@ -11,7 +11,7 @@
 #SBATCH --output=job_output.%j.out
 #SBATCH --error=job_output.%j.err
 
-# Load any necessary modules or environment variables here
+# load conda
 __conda_setup="$('/scr/jphilipp/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
             eval "$__conda_setup"
@@ -22,23 +22,24 @@ if [ $? -eq 0 ]; then
                 export PATH="/scr/jphilipp/miniconda3/bin:$PATH"
         fi
 fi
+
 unset __conda_setup
 
-# activate conda env
+# activate your env
 conda activate py310-jphilipp # i tried installing packages here already
 
-# Set the CUDA_VISIBLE_DEVICES environment variable (take those which are free after first checking cgpu)
-export CUDA_VISIBLE_DEVICES=1,2,3,4
+# set visible devices
+export CUDA_VISIBLE_DEVICES=0,1,2,3
 
 # Run your script
 wandb login --relogin 0242cef7ea759b3e7b2ff2fab0b7ddf5997f57f8 # i'd recommend doing this through an env variable prior to submitting the job or smth that is looked for in your training script.py
 
+# cd to the training script 
+cd ~/research_projects/social_tuning/manipulativeLMs/training
 
-cd /scr/jphilipp/manipulativeLMs/
-
+# todo: change confid below to make input output commands shorter
 torchrun --standalone \
-    --nproc_per_node=4 \
-    training/generation_traning.py \
-    --model_checkpoint 'alpaca_7b' --architecture 'causal-lm' \
-    --input 'data/normbank/normbank.csv' --output 'models/normbank-alpaca_7b/' \
+    --nproc_per_node=4 train.py \
+    --node_dir '/scr/jphilipp/manipulativeLM-nodecontents' --model_checkpoint 'alpaca_7b' --architecture 'causal-lm' \
+    --input 'normbank/normbank.csv' --output 'alpaca_7b/' \
     --save_total_limit 10 --save_steps 1000
