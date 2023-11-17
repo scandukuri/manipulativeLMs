@@ -6,7 +6,8 @@ from peft import (
     get_peft_model,
     get_peft_model_state_dict,
 )
-
+from datasets import Features, Value
+from transformers import LlamaForCausalLM, LlamaTokenizer
 
 
 # LoRA HYPERPARAMS
@@ -21,7 +22,7 @@ TARGET_MODULES = [
 # Weights and Biases Reporting
 os.environ["WANDB_PROJECT"] = "manipulativeLMs" # name your W&B project 
 os.environ["WANDB_LOG_MODEL"] = "checkpoint" # log all model checkpoints
-os.chdir('/scr/jphilipp/')
+os.chdir('/scr/jphilipp/manipulativeLMs/')
 
 class Seq2SeqTrainerLogger(Seq2SeqTrainer):
     def __init__(self, logfile, *args, **kwargs):
@@ -115,6 +116,7 @@ def main():
     parser.add_argument('--batchsize', type=int, default=16)
     parser.add_argument('--microbatchsize', type=int, default=4)
     parser.add_argument('--epochs', type=int, default=1)  # adjusted from 20 -> 1 for generation task
+    parser.add_argument('--save_steps', type=int, default=1000)
     parser.add_argument('--lr', type=float, default=3e-5)
     parser.add_argument('--beams', type=int, default=0)
     parser.add_argument('--temperature', type=float, default=1.0)
@@ -156,9 +158,12 @@ def main():
             df[df['split']==s].to_csv(os.path.join(OUT_DIR,'tmp/%s.csv' % s), index=False)
     metric = load_metric("rouge")
     metric2 = load_metric("sacrebleu")
-    
-    dataset = load_dataset('csv', data_files={'train': os.path.join(OUT_DIR,'tmp/train.csv'), 'test': os.path.join(OUT_DIR,'tmp/test.csv'), 'validation': os.path.join(OUT_DIR,'tmp/dev.csv')})
+    print(os.path.join(OUT_DIR, 'tmp/train.csv'))
+    ft = Features({'setting': Value('string'), 'behavior' : Value('string'), 'setting-behavior': Value('string'), 'constraints' : Value('string'), 'constraints_given' : Value('string'), 'constraints_predict' : Value('string'), 'norm' : Value('string'), 'label' : Value('string'), 'split' : Value('string')})
+    dataset = load_dataset('csv', data_files={'train': os.path.join(OUT_DIR,'tmp/train.csv'), 'test': os.path.join(OUT_DIR,'tmp/test.csv'), 'validation': os.path.join(OUT_DIR,'tmp/dev.csv')}, features=ft)
+    print(dataset['train'])
     print('train size:',len(dataset['train']))
+    
     tokenizer = AutoTokenizer.from_pretrained('models/' + str(args.model_checkpoint))
     
     model = AutoModel.from_pretrained('models/' + str(args.model_checkpoint))
