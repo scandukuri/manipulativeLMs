@@ -27,8 +27,12 @@ def tokenize(string, tokenizer, eos_id=None):
     return tokenizer(string)
 
 def preprocess(examples, tokenizer, format_string):
+    def build(r, f):
+        s = f"[SETTING] {r['setting-behavior']} [NORM] {r['norm']} + [CONSTRAINTS] {r['setting-behavior']}"
+        t = s
+        return s, t
     source_target = [build(row, format_string)
-                  for _, row in pd.DataFrame(examples).iterrows()]
+                  for _, row in pd.DataFrame(dict(examples)).iterrows()] ## cast to dict first
     source = [tup[0] for tup in source_target]
     target = [tup[1] if len(tup)>1 else "" for tup in source_target]
     
@@ -38,6 +42,7 @@ def preprocess(examples, tokenizer, format_string):
         labels = tokenize(target, tokenizer) #tokenizer(target)
 
     model_inputs["labels"] = labels["input_ids"]
+    
     return model_inputs
 
 def decode(args, df, model, tokenizer, skip_special_tokens=True, remove_history=False):

@@ -4,7 +4,7 @@
 #SBATCH --account=cocoflops
 #SBATCH --partition=cocoflops
 #SBATCH -w cocoflops-hgx-1
-#SBATCH --gres=gpu:4
+#SBATCH --gres=gpu:1
 #SBATCH --mem=1000G
 #SBATCH --cpus-per-task=128
 #SBATCH --time=3-0
@@ -39,10 +39,16 @@ cd ~/research_projects/social_tuning/manipulativeLMs/training
 
 # todo: change confid below to make input output commands shorter
 torchrun --standalone \
-    --nproc_per_node=4 train.py \
-    --node_dir '/scr/jphilipp/manipulativeLM-nodecontents' --model_checkpoint 'better-base' --architecture 'causal-lm' \
-    --input 'normbank/normbank.csv' --output 'better-base/' \
+    --nproc_per_node=1 ~/research_projects/social_tuning/manipulativeLMs/training/train.py \
+    --node_dir '/scr/jphilipp/manipulativeLM-nodecontents/' \
+    --pretrained_models_subdir 'pretrained_models/' \
+    --output_models_subdir 'output_models/' \
+    --rawdata_subdir 'rawdata/normbank/normbank.csv' \
+    --processeddata_subdir 'processeddata/' \
+    --model_checkpoint 'alpaca_7b' --tokenizer_checkpoint '7B' --architecture 'causal-lm' \
+    --model_output 'alpaca_7b_normbankFT' \
     --save_total_limit 10 --save_steps 1000
 
 
 #      git clone https://huggingface.co/agi-css/better-base
+

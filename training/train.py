@@ -104,18 +104,22 @@ def format_str_to_savefile_name(format_str):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--node_dir', type=str, default='/scr/jphilipp/manipulativeLM-nodecontents', help='path to all data or model directories on the node (parent directory for eg alpaca_7b or normbank data)')
-    parser.add_argument('--model_checkpoint', type=str, default='better-base', choices=['gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b', 'better-base', '7B'])
+    parser.add_argument('--node_dir', type=str, default='/scr/jphilipp/manipulativeLM-nodecontents/', help='path to all data or model directories on the node (parent directory for subdirectories like pretrained_models, rawdata, output_models etc)')
+    parser.add_argument('--pretrained_models_subdir', type=str, default='pretrained_models/', help='subpath to pretrained models within the compute node directory')
+    parser.add_argument('--output_models_subdir', type=str, default='output_models/', help='subpath to output models within the compute node directory')
+    parser.add_argument('--rawdata_subdir', type=str, default='rawdata/', help='subpath to raw training data within the compute node directory')
+    parser.add_argument('--processeddata_subdir', type=str, default='processeddata/', help='subpath to processed data generated during training flow within the compute node directory')
+    parser.add_argument('--model_checkpoint', type=str, default='better-base', choices=['gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b', 'better-base', '7B'], help='subpath within pretrained directory to hf style model directory')
+    parser.add_argument('--tokenizer_checkpoint', type=str, default='better-base', choices=['gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b', 'better-base', '7B'], help='subpath within pretrained directory to hf style model directory')
     parser.add_argument('--architecture', default='causal-lm', choices=['seq2seq', 'causal-lm'])
-    parser.add_argument('--input', type=str, default='normbank/normbank.csv', help='path to input file (MIC dataset)')
-    parser.add_argument('--output', type=str, default = 'results', help='path to directory for outputting results')
+    parser.add_argument('--model_output', type=str, help = 'subpath under args.output_models_subdir to directory for outputting finetuned model weights and config. Not optional!')
     parser.add_argument('--seed', type=int, default=1, help='random seed for replicability')
     parser.add_argument('--format_string', type=str, default="setting [BEHAVIOR] behavior [NORM] norm [CONSTRAINTS] ~ constraints", help='how to format the dataset')
     parser.add_argument('--source_name', type=str, default='setting-behavior', help='the name of the source column to write in the out file')
     parser.add_argument('--target_name', type=str, default='constraints', help='the name of the target column to write in the out file')
     parser.add_argument('--maxlen', type=int, default=512, help='maximum length of the tokenized input sentence pair : if greater than "maxlen", the input is truncated and else if smaller, the input is padded')
     parser.add_argument('--batchsize', type=int, default=16)
-    parser.add_argument('--microbatchsize', type=int, default=4)
+    parser.add_argument('--microbatchsize', type=int, default=16)
     parser.add_argument('--epochs', type=int, default=1)  # adjusted from 20 -> 1 for generation task
     parser.add_argument('--save_steps', type=int, default=1000)
     parser.add_argument('--lr', type=float, default=3e-5)
@@ -144,25 +148,22 @@ def main():
     
     
     # prepare out directory
-    OUT_DIR = os.path.join(args.output, f"{args.model_checkpoint.split('/')[-1]}_{format_str_to_savefile_name(args.format_string)}_epochs{args.epochs}_batch{args.batchsize}")
     MODEL_DIR = os.path.join(args.node_dir, args.model_checkpoint)
-
-    
-    if not os.path.exists(OUT_DIR):
-        os.makedirs(OUT_DIR) 
-    if not os.path.exists( os.path.join(OUT_DIR,'tmp') ):
-        os.makedirs( os.path.join(OUT_DIR,'tmp') )
    
 
     # read data
-    df = pd.read_csv(f"{args.node_dir}/{args.input}")
+    df = pd.read_csv(os.path.join(args.node_dir, args.rawdata_subdir))
     df = df[['setting', 'behavior', 'setting-behavior', 'constraints', 'norm', 'split', 'constraints_given', 'constraint_predict']].copy()
     
+    if not os.path.exists(os.path.join(args.node_dir, args.processeddata_subdir + 'tmp/')):
+        os.makedirs(os.path.join(args.node_dir, args.processeddata_subdir + 'tmp/'))
+
+
     for s in ['train', 'dev', 'test']:
         if (s == 'train') and (args.train_size > 0):
-            df[df['split'] == s].sample(n=args.train_size, random_state=args.seed).to_csv(os.path.join(OUT_DIR,'tmp/%s.csv' % s), index=False)
+            df[df['split'] == s].sample(n=args.train_size, random_state=args.seed).to_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/%s.csv' % s), index=False)
         else:
-            df[df['split']==s].to_csv(os.path.join(OUT_DIR,'tmp/%s.csv' % s), index=False)
+            df[df['split']==s].to_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/%s.csv' % s), index=False)
     
     metric = load_metric("rouge")
     
@@ -180,29 +181,29 @@ def main():
     })
 
     data_pd = {
-        "train": pd.read_csv(f"{os.path.join(OUT_DIR,'tmp')}/train.csv"), 
-        "test": pd.read_csv(f"{os.path.join(OUT_DIR,'tmp')}/test.csv"), 
-        "validation": pd.read_csv(f"{os.path.join(OUT_DIR,'tmp')}/dev.csv")}
+        "train": pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/train.csv')), 
+        "test": pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/test.csv')), 
+        "validation": pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/dev.csv'))}
 
 
     dataset_train = Dataset.from_pandas(data_pd['train'])
     dataset_test = Dataset.from_pandas(data_pd['test'])
     dataset_validation = Dataset.from_pandas(data_pd['validation'])
-    dataset = DatasetDict({'train': dataset_train,'test': dataset_test,'validation': dataset_validation})
     
+    dataset = DatasetDict({'train': dataset_train,'test': dataset_test,'validation': dataset_validation})
     # model setup
     AutoModel = AutoModelForCausalLM if (args.architecture == 'causal-lm') else AutoModelForSeq2SeqLM
-    breakpoint()
+    #breakpoint()
     # meta-llama/Llama-2-7b
     # '/scr/jphilipp/manipulativeLM-nodecontents'
     # tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, cache_dir=MODEL_DIR)
-    model = AutoModelForCausalLM.from_pretrained('roneneldan/TinyStories-1M' ,cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    tokenizer = AutoTokenizer.from_pretrained("EleutherAI/gpt-neo-125M", cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    breakpoint()
-    model = LlamaForCausalLM.from_pretrained('agi-css/better-base', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents',  load_in_8bit=True)
-    tokenizer = LlamaTokenizer.from_pretrained('agi-css/better-base', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents', load_in_8bit=True)
-    model = AutoModel.from_pretrained('agi-css/better-base', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents',  load_in_8bit=True)
+    #model = AutoModelForCausalLM.from_pretrained('roneneldan/TinyStories-1M' ,cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
+    #tokenizer = AutoTokenizer.from_pretrained("EleutherAI/gpt-neo-125M", cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
+    #tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
+    #breakpoint()
+    model = LlamaForCausalLM.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.model_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
+    tokenizer = LlamaTokenizer.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.tokenizer_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
+    #model = AutoModel.from_pretrained('agi-css/better-base', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents',  load_in_8bit=True)
 
 
     
@@ -225,7 +226,7 @@ def main():
     tokenizer.eos_token = "<eos>"
     tokenizer.add_tokens(special_tokens)
     model.resize_token_embeddings(len(tokenizer))
-    init_attribute_embeddings(model, tokenizer, special_tokens)
+    #init_attribute_embeddings(model, tokenizer, special_tokens)
     args.pad_token_id = tokenizer.pad_token_id
     
     tokenize_format_string = args.format_string.replace("~", "") if args.architecture == 'causal-lm' else args.format_string
@@ -242,8 +243,12 @@ def main():
     
     results = {}
     
+
+    # create model output path if it doesn't exist
+    if not os.path.exists(os.path.join(args.node_dir, args.output_models_subdir, args.model_output)):
+        os.makedirs(os.path.join(args.node_dir, args.output_models_subdir, args.model_output)) 
     training_args = TrainingArguments(
-        output_dir=os.path.join(OUT_DIR, "checkpoints"),
+        output_dir=os.path.join(os.path.join(args.node_dir, args.output_models_subdir, args.model_output), "checkpoints"),
         evaluation_strategy = "epoch",
         learning_rate=args.lr,
         per_device_train_batch_size=args.microbatchsize,
@@ -281,10 +286,10 @@ def main():
         data_collator=data_collator,
         tokenizer=tokenizer
     )
-    
+
     if args.architecture=='seq2seq': 
         training_args = Seq2SeqTrainingArguments(
-            output_dir=os.path.join(OUT_DIR, "checkpoints"),
+            output_dir=os.path.join(os.path.join(args.node_dir, args.output_models_subdir, args.model_output), "checkpoints"),
             evaluation_strategy = "epoch",
             learning_rate=args.lr,
             per_device_train_batch_size=args.batchsize,
@@ -298,7 +303,7 @@ def main():
             save_strategy='epoch'
         )
         trainer = Seq2SeqTrainerLogger(
-            os.path.join(OUT_DIR, 'log.txt'),
+            os.path.join(os.path.join(args.node_dir, args.output_models_subdir, args.model_output), 'log.txt'),
             model,
             training_args,
             train_dataset=tokenized_datasets["train"],
@@ -309,7 +314,7 @@ def main():
     
     trainer.train()
        
-    trainer.save_model(os.path.join(OUT_DIR, "model"))
+    trainer.save_model(os.path.join(args.node_dir, args.output_models_subdir, args.model_output))
 
     # tokenize again if using causal-lm because before, the test set did not include targets
     if args.architecture == 'causal-lm':
@@ -319,7 +324,7 @@ def main():
 
     results_df = pd.DataFrame().from_dict(results, orient='index')
     print(results_df)
-    results_df.to_csv(os.path.join(OUT_DIR, f'results_epochs{args.epochs}_batch{args.batchsize}_lr{int(args.lr*(10**5))}_seed{args.seed}.csv'))
+    results_df.to_csv(os.path.join(os.path.join(args.node_dir, args.output_models_subdir, args.model_output), f'results_epochs{args.epochs}_batch{args.batchsize}_lr{int(args.lr*(10**5))}_seed{args.seed}.csv'))
     
     if (args.top_p <= 0) and (args.top_k <= 0) and (args.beams <= 0) and (args.architecture == 'seq2seq'):
         raw_pred, _, _ = trainer.predict(tokenized_datasets['test'])
@@ -332,20 +337,20 @@ def main():
                                                          remove_history=(args.architecture == 'causal-lm'),
                                                          skip_special_tokens=True
                                                         )
-    out_df.to_csv( os.path.join(OUT_DIR, f'test_generations_beams{args.beams}_p{args.top_p}_k{args.top_k}_temp{args.temperature}.csv') )
+    out_df.to_csv( os.path.join(os.path.join(args.node_dir, args.output_models_subdir, args.model_output), f'test_generations_beams{args.beams}_p{args.top_p}_k{args.top_k}_temp{args.temperature}.csv') )
     
-    with open(os.path.join(OUT_DIR, 'format_string.txt'), 'w') as outfile:
+    with open(os.path.join(os.path.join(args.node_dir, args.output_models_subdir, args.model_output), 'format_string.txt'), 'w') as outfile:
         outfile.write(args.format_string)
         
     results = final_compute_metrics(out_df[args.target_name + '_generated'].values, 
                               out_df[args.target_name].values, 
                               metric, metric2, tokenizer)
     
-    fn = os.path.join(args.output, f'results_beams{args.beams}_p{args.top_p}_k{args.top_k}_temp{args.temperature}.json')
+    fn = os.path.join(os.path.join(args.node_dir, args.output_models_subdir, args.model_output), f'results_beams{args.beams}_p{args.top_p}_k{args.top_k}_temp{args.temperature}.json')
     with open(fn, 'w') as outfile:
         json.dump(results, outfile)
         
-    torch.save(args, os.path.join(OUT_DIR, "training_args.bin"))
+    torch.save(args, os.path.join(os.path.join(args.node_dir, args.output_models_subdir, args.model_output), "training_args.bin"))
 
 
 if __name__=='__main__':
