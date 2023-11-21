@@ -24,11 +24,12 @@ def set_seed(seed):
     os.environ['PYTHONHASHSEED'] = str(seed)
 
 def tokenize(string, tokenizer, eos_id=None):
-    return tokenizer(string)
+    return tokenizer(string, padding='max_length', truncation=True, max_length=64) #later pull this from args somehow
+    #return tokenizer(string)
 
 def preprocess(examples, tokenizer, format_string):
     def build(r, f):
-        s = f"[SETTING] {r['setting-behavior']} [NORM] {r['norm']} + [CONSTRAINTS] {r['setting-behavior']}"
+        s = f"[SETTING] {r['setting-behavior']}[NORM] {r['norm']}[CONSTRAINTS] {r['constraints']}"
         t = s
         return s, t
     source_target = [build(row, format_string)
