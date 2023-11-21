@@ -24,7 +24,7 @@ def set_seed(seed):
     os.environ['PYTHONHASHSEED'] = str(seed)
 
 def tokenize(string, tokenizer, eos_id=None):
-    return tokenizer(string, padding='max_length', truncation=True, max_length=64) #later pull this from args somehow
+    return tokenizer(string, padding=True)
     #return tokenizer(string)
 
 def preprocess(examples, tokenizer, format_string):
