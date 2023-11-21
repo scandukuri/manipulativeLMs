@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 #SBATCH --account=cocoflops
@@ -51,4 +50,3 @@ torchrun --standalone \
 
 
 #      git clone https://huggingface.co/agi-css/better-base
-
