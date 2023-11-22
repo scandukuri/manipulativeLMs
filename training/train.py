@@ -195,16 +195,10 @@ def main():
     dataset = DatasetDict({'train': dataset_train,'test': dataset_test,'validation': dataset_validation})
     # model setup
     AutoModel = AutoModelForCausalLM if (args.architecture == 'causal-lm') else AutoModelForSeq2SeqLM
-<<<<<<< HEAD
     model = AutoModelForCausalLM.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.model_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
     tokenizer = AutoTokenizer.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.tokenizer_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
     # model = AutoModelForCausalLM.from_pretrained('/scr/jphilipp/manipulativeLM-nodecontents/pretrained_models/alpaca_7b', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
     # tokenizer = AutoTokenizer.from_pretrained('/scr/jphilipp/manipulativeLM-nodecontents/pretrained_models/7B', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents', model_max_length=512)
-=======
-    model = LlamaForCausalLM.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.model_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    tokenizer = LlamaTokenizer.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.tokenizer_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-   
->>>>>>> 97f45ec51b97079e496f30e7044841f3e11a622d
     
     # add special tokens to tokenizer
     special_tokens = list(
