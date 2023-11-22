@@ -180,11 +180,13 @@ def main():
         'constraint_predict': Value('string')
     })
 
+    train_pd = pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/train.csv'))
+    test_pd = pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/test.csv'))
+    dev_pd = pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/dev.csv'))
     data_pd = {
-        "train": pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/train.csv')), 
-        "test": pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/test.csv')), 
-        "validation": pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/dev.csv'))}
-
+        "train": train_pd.head(len(train_pd) - len(train_pd) % args.batchsize), 
+        "test": test_pd.head(len(test_pd) - len(test_pd) % args.batchsize), 
+        "validation": dev_pd.head(len(dev_pd) - len(dev_pd) % args.batchsize)}
 
     dataset_train = Dataset.from_pandas(data_pd['train'])
     dataset_test = Dataset.from_pandas(data_pd['test'])
@@ -220,7 +222,7 @@ def main():
     args.pad_token_id = tokenizer.pad_token_id
     
     tokenize_format_string = args.format_string.replace("~", "") if args.architecture == 'causal-lm' else args.format_string
-    tokenized_datasets = dataset.map(lambda x: preprocess(x, tokenizer, tokenize_format_string), batched=True)
+    tokenized_datasets = dataset.map(lambda x: preprocess(x, tokenizer, tokenize_format_string), batched=True, batch_size=512)
     
     #tokenized_datasets = tokenized_datasets.remove_columns(dataset_train.column_names)
     print('training sample input', tokenizer.decode(pd.DataFrame(tokenized_datasets['train']).iloc[0]['input_ids'],skip_special_tokens=False) )
