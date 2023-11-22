@@ -12,6 +12,7 @@ import numpy as np
 import torch
 from tqdm import tqdm
 import json
+import copy
 
 def set_seed(seed):
     """ Set all seeds to make results reproducible """
@@ -23,28 +24,34 @@ def set_seed(seed):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
 
-def tokenize(string, tokenizer, eos_id=None):
-    return tokenizer(string, padding=True)
-    #return tokenizer(string)
+
+def tokenize(strings, tokenizer, eos_id=None):
+    tokenized_list = tokenizer(strings, return_tensors="pt", padding='longest', truncation=True, max_length=tokenizer.model_max_length)
+    input_ids = labels = list(tokenized_list['input_ids'])
+    input_ids_lens = labels_lens = [label.ne(tokenizer.pad_token_id).sum().item() for label in labels]
+    return dict(input_ids=input_ids, labels=labels, input_ids_lens=input_ids_lens, labels_lens=labels_lens, attention_masks=tokenized_list['attention_mask'])
+
 
 def preprocess(examples, tokenizer, format_string):
     def build(r, f):
-        s = f"[SETTING] {r['setting-behavior']}[NORM] {r['norm']}[CONSTRAINTS] {r['constraints']}"
-        t = s
+        s = f"{r['setting-behavior'].strip()} [NORM] {r['norm'].strip()} [CONSTRAINTS] "
+        t = f"{r['constraints'].strip()}"
         return s, t
-    source_target = [build(row, format_string)
-                  for _, row in pd.DataFrame(dict(examples)).iterrows()] ## cast to dict first
+    source_target = [build(row, format_string) for _, row in pd.DataFrame(dict(examples)).iterrows()]
     source = [tup[0] for tup in source_target]
     target = [tup[1] if len(tup)>1 else "" for tup in source_target]
-    
-    model_inputs = tokenize(source, tokenizer) #tokenizer(source)
+    examples = [s + t for s, t in source_target]
+    examples_tokenized, sources_tokenized = [tokenize(strings, tokenizer) for strings in (examples, source)]
+    input_ids = examples_tokenized["input_ids"]
+    labels = copy.deepcopy(input_ids)
+    for label, source_len in zip(labels, sources_tokenized["input_ids_lens"]):
+        label[:source_len] = -100
+    attention_masks = examples_tokenized['attention_masks']
+    #attention_masks = sources_tokenized['attention_masks']  ## Which one is it? i think the above one...
+    if len(input_ids) != len(labels) or len(input_ids) != len(attention_masks) or set([len(id) for id in input_ids]) != set([len(id) for id in labels]) or set([len(id) for id in input_ids]) != set([len(id) for id in attention_masks]):
+        raise Exception("Size mismatch")
+    return dict(input_ids=input_ids, labels=labels, attention_masks=attention_masks)
 
-    with tokenizer.as_target_tokenizer():
-        labels = tokenize(target, tokenizer) #tokenizer(target)
-
-    model_inputs["labels"] = labels["input_ids"]
-    
-    return model_inputs
 
 def decode(args, df, model, tokenizer, skip_special_tokens=True, remove_history=False):
     model = model
@@ -55,7 +62,7 @@ def decode(args, df, model, tokenizer, skip_special_tokens=True, remove_history=
     
     for _, row in df.iterrows():
         input_ids = torch.tensor([row['input_ids']], device='cuda')
-        
+        lst
         out = model.generate(
                 input_ids,
                 do_sample=args.beams == 0,

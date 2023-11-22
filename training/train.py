@@ -193,19 +193,9 @@ def main():
     dataset = DatasetDict({'train': dataset_train,'test': dataset_test,'validation': dataset_validation})
     # model setup
     AutoModel = AutoModelForCausalLM if (args.architecture == 'causal-lm') else AutoModelForSeq2SeqLM
-    #breakpoint()
-    # meta-llama/Llama-2-7b
-    # '/scr/jphilipp/manipulativeLM-nodecontents'
-    # tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, cache_dir=MODEL_DIR)
-    #model = AutoModelForCausalLM.from_pretrained('roneneldan/TinyStories-1M' ,cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    #tokenizer = AutoTokenizer.from_pretrained("EleutherAI/gpt-neo-125M", cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    #tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    #breakpoint()
     model = LlamaForCausalLM.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.model_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
     tokenizer = LlamaTokenizer.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.tokenizer_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    #model = AutoModel.from_pretrained('agi-css/better-base', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents',  load_in_8bit=True)
-
-
+   
     
     # add special tokens to tokenizer
     special_tokens = list(
@@ -223,7 +213,7 @@ def main():
         )
     )
     tokenizer.pad_token = "<pad>"
-    tokenizer.eos_token = "<eos>"
+    tokenizer.eos_token = "<eos>" 
     tokenizer.add_tokens(special_tokens)
     model.resize_token_embeddings(len(tokenizer))
     #init_attribute_embeddings(model, tokenizer, special_tokens)
@@ -231,7 +221,8 @@ def main():
     
     tokenize_format_string = args.format_string.replace("~", "") if args.architecture == 'causal-lm' else args.format_string
     tokenized_datasets = dataset.map(lambda x: preprocess(x, tokenizer, tokenize_format_string), batched=True)
-        
+    
+    #tokenized_datasets = tokenized_datasets.remove_columns(dataset_train.column_names)
     print('training sample input', tokenizer.decode(pd.DataFrame(tokenized_datasets['train']).iloc[0]['input_ids'],skip_special_tokens=False) )
     try:
         print('training sample target', tokenizer.decode(pd.DataFrame(tokenized_datasets['train']).iloc[0]['labels'],skip_special_tokens=False) )
