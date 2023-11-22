@@ -26,7 +26,11 @@ def set_seed(seed):
 
 
 def tokenize(strings, tokenizer, eos_id=None):
+<<<<<<< HEAD
     tokenized_list = tokenizer(strings, return_tensors="pt", padding='max_length', truncation=True, max_length=256)
+=======
+    tokenized_list = tokenizer(strings, return_tensors="pt", padding='longest', truncation=True, max_length=tokenizer.model_max_length)
+>>>>>>> 97f45ec51b97079e496f30e7044841f3e11a622d
     input_ids = labels = list(tokenized_list['input_ids'])
     input_ids_lens = labels_lens = [label.ne(tokenizer.pad_token_id).sum().item() for label in labels]
     return dict(input_ids=input_ids, labels=labels, input_ids_lens=input_ids_lens, labels_lens=labels_lens, attention_masks=tokenized_list['attention_mask'])
