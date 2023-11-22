@@ -7,7 +7,7 @@ from peft import (
     get_peft_model_state_dict,
 )
 from datasets import Features, Value, Dataset, DatasetDict
-from transformers import LlamaForCausalLM, LlamaTokenizer, AutoTokenizer, LlamaForCausalLM
+from transformers import LlamaForCausalLM, LlamaTokenizer, AutoTokenizer, AutoModelForCausalLM
 
 
 
@@ -107,12 +107,12 @@ def main():
     parser.add_argument('--node_dir', type=str, default='/scr/jphilipp/manipulativeLM-nodecontents/', help='path to all data or model directories on the node (parent directory for subdirectories like pretrained_models, rawdata, output_models etc)')
     parser.add_argument('--pretrained_models_subdir', type=str, default='pretrained_models/', help='subpath to pretrained models within the compute node directory')
     parser.add_argument('--output_models_subdir', type=str, default='output_models/', help='subpath to output models within the compute node directory')
-    parser.add_argument('--rawdata_subdir', type=str, default='rawdata/', help='subpath to raw training data within the compute node directory')
+    parser.add_argument('--rawdata_subdir', type=str, default='rawdata/normbank/normbank.csv', help='subpath to raw training data within the compute node directory')
     parser.add_argument('--processeddata_subdir', type=str, default='processeddata/', help='subpath to processed data generated during training flow within the compute node directory')
-    parser.add_argument('--model_checkpoint', type=str, default='better-base', choices=['gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b', 'better-base', '7B'], help='subpath within pretrained directory to hf style model directory')
-    parser.add_argument('--tokenizer_checkpoint', type=str, default='better-base', choices=['gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b', 'better-base', '7B'], help='subpath within pretrained directory to hf style model directory')
+    parser.add_argument('--model_checkpoint', type=str, default='better-base', choices=['mistralai/Mistral-7B-Instruct-v0.1', 'gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b', 'better-base', '7B'], help='subpath within pretrained directory to hf style model directory')
+    parser.add_argument('--tokenizer_checkpoint', type=str, default='better-base', choices=['mistralai/Mistral-7B-Instruct-v0.1', 'gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b', 'better-base', '7B'], help='subpath within pretrained directory to hf style model directory')
     parser.add_argument('--architecture', default='causal-lm', choices=['seq2seq', 'causal-lm'])
-    parser.add_argument('--model_output', type=str, help = 'subpath under args.output_models_subdir to directory for outputting finetuned model weights and config. Not optional!')
+    parser.add_argument('--model_output', default='FT_TEST', type=str, help = 'subpath under args.output_models_subdir to directory for outputting finetuned model weights and config. Not optional!')
     parser.add_argument('--seed', type=int, default=1, help='random seed for replicability')
     parser.add_argument('--format_string', type=str, default="setting [BEHAVIOR] behavior [NORM] norm [CONSTRAINTS] ~ constraints", help='how to format the dataset')
     parser.add_argument('--source_name', type=str, default='setting-behavior', help='the name of the source column to write in the out file')
@@ -180,11 +180,13 @@ def main():
         'constraint_predict': Value('string')
     })
 
+    train_pd = pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/train.csv'))
+    test_pd = pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/test.csv'))
+    dev_pd = pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/dev.csv'))
     data_pd = {
-        "train": pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/train.csv')), 
-        "test": pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/test.csv')), 
-        "validation": pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/dev.csv'))}
-
+        "train": train_pd.head(len(train_pd) - len(train_pd) % args.batchsize), 
+        "test": test_pd.head(len(test_pd) - len(test_pd) % args.batchsize), 
+        "validation": dev_pd.head(len(dev_pd) - len(dev_pd) % args.batchsize)}
 
     dataset_train = Dataset.from_pandas(data_pd['train'])
     dataset_test = Dataset.from_pandas(data_pd['test'])
@@ -193,19 +195,10 @@ def main():
     dataset = DatasetDict({'train': dataset_train,'test': dataset_test,'validation': dataset_validation})
     # model setup
     AutoModel = AutoModelForCausalLM if (args.architecture == 'causal-lm') else AutoModelForSeq2SeqLM
-    #breakpoint()
-    # meta-llama/Llama-2-7b
-    # '/scr/jphilipp/manipulativeLM-nodecontents'
-    # tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, cache_dir=MODEL_DIR)
-    #model = AutoModelForCausalLM.from_pretrained('roneneldan/TinyStories-1M' ,cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    #tokenizer = AutoTokenizer.from_pretrained("EleutherAI/gpt-neo-125M", cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    #tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR, cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    #breakpoint()
-    model = LlamaForCausalLM.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.model_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    tokenizer = LlamaTokenizer.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.tokenizer_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    #model = AutoModel.from_pretrained('agi-css/better-base', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents',  load_in_8bit=True)
-
-
+    model = AutoModelForCausalLM.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.model_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
+    tokenizer = AutoTokenizer.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.tokenizer_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
+    # model = AutoModelForCausalLM.from_pretrained('/scr/jphilipp/manipulativeLM-nodecontents/pretrained_models/alpaca_7b', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
+    # tokenizer = AutoTokenizer.from_pretrained('/scr/jphilipp/manipulativeLM-nodecontents/pretrained_models/7B', cache_dir='/scr/jphilipp/manipulativeLM-nodecontents', model_max_length=512)
     
     # add special tokens to tokenizer
     special_tokens = list(
@@ -223,15 +216,16 @@ def main():
         )
     )
     tokenizer.pad_token = "<pad>"
-    tokenizer.eos_token = "<eos>"
+    tokenizer.eos_token = "<eos>" 
     tokenizer.add_tokens(special_tokens)
     model.resize_token_embeddings(len(tokenizer))
     #init_attribute_embeddings(model, tokenizer, special_tokens)
     args.pad_token_id = tokenizer.pad_token_id
     
     tokenize_format_string = args.format_string.replace("~", "") if args.architecture == 'causal-lm' else args.format_string
-    tokenized_datasets = dataset.map(lambda x: preprocess(x, tokenizer, tokenize_format_string), batched=True)
-        
+    tokenized_datasets = dataset.map(lambda x: preprocess(x, tokenizer, tokenize_format_string), batched=True, batch_size=512)
+    
+    #tokenized_datasets = tokenized_datasets.remove_columns(dataset_train.column_names)
     print('training sample input', tokenizer.decode(pd.DataFrame(tokenized_datasets['train']).iloc[0]['input_ids'],skip_special_tokens=False) )
     try:
         print('training sample target', tokenizer.decode(pd.DataFrame(tokenized_datasets['train']).iloc[0]['labels'],skip_special_tokens=False) )
@@ -311,7 +305,7 @@ def main():
             data_collator=data_collator,
             tokenizer=tokenizer
         )
-    
+
     trainer.train()
        
     trainer.save_model(os.path.join(args.node_dir, args.output_models_subdir, args.model_output))

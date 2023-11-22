@@ -1,0 +1,190 @@
+2023-11-21 12:54:33,236 INFO    StreamThr :2481648 [internal.py:wandb_internal():86] W&B internal server running at pid: 2481648, started at: 2023-11-21 12:54:33.235282
+2023-11-21 12:54:33,238 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: status
+2023-11-21 12:54:33,239 INFO    WriterThread:2481648 [datastore.py:open_for_write():85] open: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/run-e2fc3ita.wandb
+2023-11-21 12:54:33,241 DEBUG   SenderThread:2481648 [sender.py:send():380] send: header
+2023-11-21 12:54:33,246 DEBUG   SenderThread:2481648 [sender.py:send():380] send: run
+2023-11-21 12:54:33,635 INFO    SenderThread:2481648 [dir_watcher.py:__init__():211] watching files in: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files
+2023-11-21 12:54:33,636 INFO    SenderThread:2481648 [sender.py:_start_run_threads():1124] run started: e2fc3ita with start time 1700600073.234596
+2023-11-21 12:54:33,646 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: check_version
+2023-11-21 12:54:33,646 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: check_version
+2023-11-21 12:54:33,747 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: run_start
+2023-11-21 12:54:33,758 DEBUG   HandlerThread:2481648 [system_info.py:__init__():32] System info init
+2023-11-21 12:54:33,758 DEBUG   HandlerThread:2481648 [system_info.py:__init__():47] System info init done
+2023-11-21 12:54:33,758 INFO    HandlerThread:2481648 [system_monitor.py:start():194] Starting system monitor
+2023-11-21 12:54:33,758 INFO    SystemMonitor:2481648 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2023-11-21 12:54:33,759 INFO    HandlerThread:2481648 [system_monitor.py:probe():214] Collecting system info
+2023-11-21 12:54:33,760 INFO    SystemMonitor:2481648 [interfaces.py:start():190] Started cpu monitoring
+2023-11-21 12:54:33,760 INFO    SystemMonitor:2481648 [interfaces.py:start():190] Started disk monitoring
+2023-11-21 12:54:33,761 INFO    SystemMonitor:2481648 [interfaces.py:start():190] Started gpu monitoring
+2023-11-21 12:54:33,762 INFO    SystemMonitor:2481648 [interfaces.py:start():190] Started memory monitoring
+2023-11-21 12:54:33,763 INFO    SystemMonitor:2481648 [interfaces.py:start():190] Started network monitoring
+2023-11-21 12:54:33,791 DEBUG   HandlerThread:2481648 [system_info.py:probe():196] Probing system
+2023-11-21 12:54:33,793 DEBUG   HandlerThread:2481648 [system_info.py:_probe_git():181] Probing git
+2023-11-21 12:54:33,803 DEBUG   HandlerThread:2481648 [system_info.py:_probe_git():189] Probing git done
+2023-11-21 12:54:33,803 DEBUG   HandlerThread:2481648 [system_info.py:probe():244] Probing system done
+2023-11-21 12:54:33,803 DEBUG   HandlerThread:2481648 [system_monitor.py:probe():223] {'os': 'Linux-5.4.0-162-generic-x86_64-with-glibc2.31', 'python': '3.11.5', 'heartbeatAt': '2023-11-21T20:54:33.791149', 'startedAt': '2023-11-21T20:54:33.225737', 'docker': None, 'cuda': None, 'args': ('--node_dir', '/scr/jphilipp/manipulativeLM-nodecontents/', '--pretrained_models_subdir', 'pretrained_models/', '--output_models_subdir', 'output_models/', '--rawdata_subdir', 'rawdata/normbank/normbank.csv', '--processeddata_subdir', 'processeddata/', '--model_checkpoint', 'alpaca_7b', '--tokenizer_checkpoint', '7B', '--architecture', 'causal-lm', '--model_output', 'alpaca_7b_normbankFT', '--save_total_limit', '10', '--save_steps', '1000', '--microbatchsize', '16'), 'state': 'running', 'program': '/sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/training/train.py', 'codePathLocal': 'training/train.py', 'codePath': 'training/train.py', 'git': {'remote': 'https://github.com/scandukuri/manipulativeLMs.git', 'commit': 'd144bfbdd10e73d2a945425e2ba122c52ffea8d5'}, 'email': None, 'root': '/sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs', 'host': 'cocoflops-hgx-1', 'username': 'jphilipp', 'executable': '/scr/jphilipp/miniconda3/bin/python', 'cpu_count': 64, 'cpu_count_logical': 128, 'cpu_freq': {'current': 2231.5471093749998, 'min': 1500.0, 'max': 2800.0}, 'cpu_freq_per_core': [{'current': 2221.727, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.538, 'min': 1500.0, 'max': 2800.0}, {'current': 1795.722, 'min': 1500.0, 'max': 2800.0}, {'current': 1794.711, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.861, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.562, 'min': 1500.0, 'max': 2800.0}, {'current': 2186.889, 'min': 1500.0, 'max': 2800.0}, {'current': 1654.773, 'min': 1500.0, 'max': 2800.0}, {'current': 1376.274, 'min': 1500.0, 'max': 2800.0}, {'current': 1534.387, 'min': 1500.0, 'max': 2800.0}, {'current': 1346.161, 'min': 1500.0, 'max': 2800.0}, {'current': 1522.199, 'min': 1500.0, 'max': 2800.0}, {'current': 1702.225, 'min': 1500.0, 'max': 2800.0}, {'current': 1858.82, 'min': 1500.0, 'max': 2800.0}, {'current': 1858.222, 'min': 1500.0, 'max': 2800.0}, {'current': 1955.134, 'min': 1500.0, 'max': 2800.0}, {'current': 2018.888, 'min': 1500.0, 'max': 2800.0}, {'current': 2192.416, 'min': 1500.0, 'max': 2800.0}, {'current': 2261.187, 'min': 1500.0, 'max': 2800.0}, {'current': 2022.856, 'min': 1500.0, 'max': 2800.0}, {'current': 2275.355, 'min': 1500.0, 'max': 2800.0}, {'current': 2291.099, 'min': 1500.0, 'max': 2800.0}, {'current': 2080.08, 'min': 1500.0, 'max': 2800.0}, {'current': 2671.249, 'min': 1500.0, 'max': 2800.0}, {'current': 2322.258, 'min': 1500.0, 'max': 2800.0}, {'current': 2279.506, 'min': 1500.0, 'max': 2800.0}, {'current': 2891.565, 'min': 1500.0, 'max': 2800.0}, {'current': 2920.323, 'min': 1500.0, 'max': 2800.0}, {'current': 1795.786, 'min': 1500.0, 'max': 2800.0}, {'current': 1796.05, 'min': 1500.0, 'max': 2800.0}, {'current': 1795.814, 'min': 1500.0, 'max': 2800.0}, {'current': 1796.093, 'min': 1500.0, 'max': 2800.0}, {'current': 2971.952, 'min': 1500.0, 'max': 2800.0}, {'current': 3728.907, 'min': 1500.0, 'max': 2800.0}, {'current': 2974.017, 'min': 1500.0, 'max': 2800.0}, {'current': 2976.097, 'min': 1500.0, 'max': 2800.0}, {'current': 1796.765, 'min': 1500.0, 'max': 2800.0}, {'current': 1494.897, 'min': 1500.0, 'max': 2800.0}, {'current': 1494.981, 'min': 1500.0, 'max': 2800.0}, {'current': 1495.304, 'min': 1500.0, 'max': 2800.0}, {'current': 1494.837, 'min': 1500.0, 'max': 2800.0}, {'current': 1795.887, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.082, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.064, 'min': 1500.0, 'max': 2800.0}, {'current': 2968.06, 'min': 1500.0, 'max': 2800.0}, {'current': 3683.828, 'min': 1500.0, 'max': 2800.0}, {'current': 2898.727, 'min': 1500.0, 'max': 2800.0}, {'current': 2862.976, 'min': 1500.0, 'max': 2800.0}, {'current': 1495.237, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.789, 'min': 1500.0, 'max': 2800.0}, {'current': 1794.985, 'min': 1500.0, 'max': 2800.0}, {'current': 1667.886, 'min': 1500.0, 'max': 2800.0}, {'current': 3683.464, 'min': 1500.0, 'max': 2800.0}, {'current': 2861.044, 'min': 1500.0, 'max': 2800.0}, {'current': 2974.674, 'min': 1500.0, 'max': 2800.0}, {'current': 2858.365, 'min': 1500.0, 'max': 2800.0}, {'current': 1496.797, 'min': 1500.0, 'max': 2800.0}, {'current': 1494.691, 'min': 1500.0, 'max': 2800.0}, {'current': 1498.889, 'min': 1500.0, 'max': 2800.0}, {'current': 1495.64, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.237, 'min': 1500.0, 'max': 2800.0}, {'current': 1495.701, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.921, 'min': 1500.0, 'max': 2800.0}, {'current': 1498.014, 'min': 1500.0, 'max': 2800.0}, {'current': 2932.421, 'min': 1500.0, 'max': 2800.0}, {'current': 2933.234, 'min': 1500.0, 'max': 2800.0}, {'current': 3661.119, 'min': 1500.0, 'max': 2800.0}, {'current': 3648.283, 'min': 1500.0, 'max': 2800.0}, {'current': 2516.106, 'min': 1500.0, 'max': 2800.0}, {'current': 1702.477, 'min': 1500.0, 'max': 2800.0}, {'current': 1546.706, 'min': 1500.0, 'max': 2800.0}, {'current': 3665.992, 'min': 1500.0, 'max': 2800.0}, {'current': 1566.811, 'min': 1500.0, 'max': 2800.0}, {'current': 1742.627, 'min': 1500.0, 'max': 2800.0}, {'current': 1430.817, 'min': 1500.0, 'max': 2800.0}, {'current': 1447.777, 'min': 1500.0, 'max': 2800.0}, {'current': 1987.553, 'min': 1500.0, 'max': 2800.0}, {'current': 2275.433, 'min': 1500.0, 'max': 2800.0}, {'current': 2500.921, 'min': 1500.0, 'max': 2800.0}, {'current': 2622.652, 'min': 1500.0, 'max': 2800.0}, {'current': 2373.983, 'min': 1500.0, 'max': 2800.0}, {'current': 2631.632, 'min': 1500.0, 'max': 2800.0}, {'current': 2523.444, 'min': 1500.0, 'max': 2800.0}, {'current': 2292.536, 'min': 1500.0, 'max': 2800.0}, {'current': 3249.224, 'min': 1500.0, 'max': 2800.0}, {'current': 3274.628, 'min': 1500.0, 'max': 2800.0}, {'current': 2929.004, 'min': 1500.0, 'max': 2800.0}, {'current': 3173.264, 'min': 1500.0, 'max': 2800.0}, {'current': 2426.684, 'min': 1500.0, 'max': 2800.0}, {'current': 2746.966, 'min': 1500.0, 'max': 2800.0}, {'current': 2475.007, 'min': 1500.0, 'max': 2800.0}, {'current': 2604.66, 'min': 1500.0, 'max': 2800.0}, {'current': 2457.981, 'min': 1500.0, 'max': 2800.0}, {'current': 2372.808, 'min': 1500.0, 'max': 2800.0}, {'current': 2396.82, 'min': 1500.0, 'max': 2800.0}, {'current': 2400.481, 'min': 1500.0, 'max': 2800.0}, {'current': 2968.161, 'min': 1500.0, 'max': 2800.0}, {'current': 3683.008, 'min': 1500.0, 'max': 2800.0}, {'current': 2852.123, 'min': 1500.0, 'max': 2800.0}, {'current': 2845.762, 'min': 1500.0, 'max': 2800.0}, {'current': 2603.921, 'min': 1500.0, 'max': 2800.0}, {'current': 2090.225, 'min': 1500.0, 'max': 2800.0}, {'current': 1927.511, 'min': 1500.0, 'max': 2800.0}, {'current': 2268.003, 'min': 1500.0, 'max': 2800.0}, {'current': 2401.521, 'min': 1500.0, 'max': 2800.0}, {'current': 3546.647, 'min': 1500.0, 'max': 2800.0}, {'current': 2834.397, 'min': 1500.0, 'max': 2800.0}, {'current': 2838.849, 'min': 1500.0, 'max': 2800.0}, {'current': 2839.254, 'min': 1500.0, 'max': 2800.0}, {'current': 3550.521, 'min': 1500.0, 'max': 2800.0}, {'current': 2834.619, 'min': 1500.0, 'max': 2800.0}, {'current': 2834.321, 'min': 1500.0, 'max': 2800.0}, {'current': 2027.576, 'min': 1500.0, 'max': 2800.0}, {'current': 2022.177, 'min': 1500.0, 'max': 2800.0}, {'current': 2486.25, 'min': 1500.0, 'max': 2800.0}, {'current': 2123.393, 'min': 1500.0, 'max': 2800.0}, {'current': 3538.1, 'min': 1500.0, 'max': 2800.0}, {'current': 2834.251, 'min': 1500.0, 'max': 2800.0}, {'current': 3320.316, 'min': 1500.0, 'max': 2800.0}, {'current': 2837.803, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.806, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.703, 'min': 1500.0, 'max': 2800.0}, {'current': 1495.855, 'min': 1500.0, 'max': 2800.0}, {'current': 1496.694, 'min': 1500.0, 'max': 2800.0}, {'current': 1496.903, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.337, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.313, 'min': 1500.0, 'max': 2800.0}, {'current': 1497.717, 'min': 1500.0, 'max': 2800.0}], 'disk': {'/': {'total': 437.88097381591797, 'used': 110.58999633789062}}, 'gpu': 'NVIDIA A100-SXM4-80GB', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA A100-SXM4-80GB', 'memory_total': 85899345920}], 'memory': {'total': 1007.7270240783691}}
+2023-11-21 12:54:33,803 INFO    HandlerThread:2481648 [system_monitor.py:probe():224] Finished collecting system info
+2023-11-21 12:54:33,803 INFO    HandlerThread:2481648 [system_monitor.py:probe():227] Publishing system info
+2023-11-21 12:54:33,803 DEBUG   HandlerThread:2481648 [system_info.py:_save_pip():52] Saving list of pip packages installed into the current environment
+2023-11-21 12:54:33,805 DEBUG   HandlerThread:2481648 [system_info.py:_save_pip():68] Saving pip packages done
+2023-11-21 12:54:33,805 DEBUG   HandlerThread:2481648 [system_info.py:_save_conda():75] Saving list of conda packages installed into the current environment
+2023-11-21 12:54:34,638 INFO    Thread-12 :2481648 [dir_watcher.py:_on_file_created():271] file/dir created: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/conda-environment.yaml
+2023-11-21 12:54:34,639 INFO    Thread-12 :2481648 [dir_watcher.py:_on_file_created():271] file/dir created: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/requirements.txt
+2023-11-21 12:54:35,414 DEBUG   HandlerThread:2481648 [system_info.py:_save_conda():87] Saving conda packages done
+2023-11-21 12:54:35,417 INFO    HandlerThread:2481648 [system_monitor.py:probe():229] Finished publishing system info
+2023-11-21 12:54:35,420 DEBUG   SenderThread:2481648 [sender.py:send():380] send: files
+2023-11-21 12:54:35,420 INFO    SenderThread:2481648 [sender.py:_save_file():1380] saving file wandb-metadata.json with policy now
+2023-11-21 12:54:35,429 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: stop_status
+2023-11-21 12:54:35,430 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: stop_status
+2023-11-21 12:54:35,433 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: internal_messages
+2023-11-21 12:54:35,610 DEBUG   SenderThread:2481648 [sender.py:send():380] send: telemetry
+2023-11-21 12:54:35,610 DEBUG   SenderThread:2481648 [sender.py:send():380] send: config
+2023-11-21 12:54:35,611 DEBUG   SenderThread:2481648 [sender.py:send():380] send: metric
+2023-11-21 12:54:35,611 DEBUG   SenderThread:2481648 [sender.py:send():380] send: telemetry
+2023-11-21 12:54:35,611 DEBUG   SenderThread:2481648 [sender.py:send():380] send: metric
+2023-11-21 12:54:35,611 WARNING SenderThread:2481648 [sender.py:send_metric():1331] Seen metric with glob (shouldn't happen)
+2023-11-21 12:54:35,611 DEBUG   SenderThread:2481648 [sender.py:send():380] send: telemetry
+2023-11-21 12:54:35,613 DEBUG   SenderThread:2481648 [sender.py:send():380] send: exit
+2023-11-21 12:54:35,613 INFO    SenderThread:2481648 [sender.py:send_exit():585] handling exit code: 1
+2023-11-21 12:54:35,613 INFO    SenderThread:2481648 [sender.py:send_exit():587] handling runtime: 1
+2023-11-21 12:54:35,615 INFO    SenderThread:2481648 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2023-11-21 12:54:35,615 INFO    SenderThread:2481648 [sender.py:send_exit():593] send defer
+2023-11-21 12:54:35,616 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:35,616 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 0
+2023-11-21 12:54:35,616 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:35,616 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 0
+2023-11-21 12:54:35,616 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 1
+2023-11-21 12:54:35,616 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:35,616 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 1
+2023-11-21 12:54:35,616 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:35,617 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 1
+2023-11-21 12:54:35,617 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 2
+2023-11-21 12:54:35,617 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:35,617 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 2
+2023-11-21 12:54:35,617 INFO    HandlerThread:2481648 [system_monitor.py:finish():203] Stopping system monitor
+2023-11-21 12:54:35,617 DEBUG   SystemMonitor:2481648 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2023-11-21 12:54:35,617 DEBUG   SystemMonitor:2481648 [system_monitor.py:_start():179] Finished system metrics aggregation loop
+2023-11-21 12:54:35,617 DEBUG   SystemMonitor:2481648 [system_monitor.py:_start():183] Publishing last batch of metrics
+2023-11-21 12:54:35,618 INFO    HandlerThread:2481648 [interfaces.py:finish():202] Joined cpu monitor
+2023-11-21 12:54:35,618 INFO    HandlerThread:2481648 [interfaces.py:finish():202] Joined disk monitor
+2023-11-21 12:54:35,638 INFO    Thread-12 :2481648 [dir_watcher.py:_on_file_modified():288] file/dir modified: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/conda-environment.yaml
+2023-11-21 12:54:35,639 INFO    Thread-12 :2481648 [dir_watcher.py:_on_file_created():271] file/dir created: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/output.log
+2023-11-21 12:54:35,639 INFO    Thread-12 :2481648 [dir_watcher.py:_on_file_created():271] file/dir created: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/wandb-metadata.json
+2023-11-21 12:54:35,639 INFO    Thread-12 :2481648 [dir_watcher.py:_on_file_created():271] file/dir created: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/wandb-summary.json
+2023-11-21 12:54:35,696 INFO    HandlerThread:2481648 [interfaces.py:finish():202] Joined gpu monitor
+2023-11-21 12:54:35,697 INFO    HandlerThread:2481648 [interfaces.py:finish():202] Joined memory monitor
+2023-11-21 12:54:35,697 INFO    HandlerThread:2481648 [interfaces.py:finish():202] Joined network monitor
+2023-11-21 12:54:35,697 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:35,697 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 2
+2023-11-21 12:54:35,697 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 3
+2023-11-21 12:54:35,697 DEBUG   SenderThread:2481648 [sender.py:send():380] send: stats
+2023-11-21 12:54:35,699 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:35,699 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 3
+2023-11-21 12:54:35,699 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:35,699 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 3
+2023-11-21 12:54:35,699 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 4
+2023-11-21 12:54:35,700 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:35,700 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 4
+2023-11-21 12:54:35,700 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:35,700 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 4
+2023-11-21 12:54:35,700 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 5
+2023-11-21 12:54:35,700 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:35,700 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 5
+2023-11-21 12:54:35,700 DEBUG   SenderThread:2481648 [sender.py:send():380] send: summary
+2023-11-21 12:54:35,702 INFO    SenderThread:2481648 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2023-11-21 12:54:35,703 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:35,703 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 5
+2023-11-21 12:54:35,703 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 6
+2023-11-21 12:54:35,703 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:35,703 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 6
+2023-11-21 12:54:35,703 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:35,703 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 6
+2023-11-21 12:54:35,707 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: status_report
+2023-11-21 12:54:35,845 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 7
+2023-11-21 12:54:35,846 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:35,846 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 7
+2023-11-21 12:54:35,846 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:35,846 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 7
+2023-11-21 12:54:35,869 INFO    wandb-upload_0:2481648 [upload_job.py:push():131] Uploaded file /tmp/jphilipp/tmp0z8tlzvcwandb/xwx2px3u-wandb-metadata.json
+2023-11-21 12:54:36,450 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: poll_exit
+2023-11-21 12:54:36,640 INFO    Thread-12 :2481648 [dir_watcher.py:_on_file_modified():288] file/dir modified: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/config.yaml
+2023-11-21 12:54:36,640 INFO    Thread-12 :2481648 [dir_watcher.py:_on_file_modified():288] file/dir modified: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/wandb-summary.json
+2023-11-21 12:54:37,622 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 8
+2023-11-21 12:54:37,623 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: poll_exit
+2023-11-21 12:54:37,623 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:37,623 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 8
+2023-11-21 12:54:37,623 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:37,623 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 8
+2023-11-21 12:54:37,623 INFO    SenderThread:2481648 [job_builder.py:build():298] Attempting to build job artifact
+2023-11-21 12:54:37,624 INFO    SenderThread:2481648 [job_builder.py:_get_source_type():428] is repo sourced job
+2023-11-21 12:54:37,641 INFO    Thread-12 :2481648 [dir_watcher.py:_on_file_modified():288] file/dir modified: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/output.log
+2023-11-21 12:54:37,643 INFO    SenderThread:2481648 [job_builder.py:build():404] adding wandb-job metadata file
+2023-11-21 12:54:37,652 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 9
+2023-11-21 12:54:37,652 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:37,652 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 9
+2023-11-21 12:54:37,652 DEBUG   SenderThread:2481648 [sender.py:send():380] send: artifact
+2023-11-21 12:54:38,288 INFO    SenderThread:2481648 [sender.py:send_artifact():1458] sent artifact job-https___github.com_scandukuri_manipulativeLMs.git_training_train.py - {'id': 'QXJ0aWZhY3Q6NjQ1MDQyMDgw', 'state': 'COMMITTED', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjExNzYxMDEzMQ==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6NjQ1MDQyMDgw', 'versionIndex': 0}}}
+2023-11-21 12:54:38,288 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:38,288 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 9
+2023-11-21 12:54:38,288 INFO    SenderThread:2481648 [dir_watcher.py:finish():358] shutting down directory watcher
+2023-11-21 12:54:38,642 INFO    SenderThread:2481648 [dir_watcher.py:finish():388] scan: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files
+2023-11-21 12:54:38,643 INFO    SenderThread:2481648 [dir_watcher.py:finish():402] scan save: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/conda-environment.yaml conda-environment.yaml
+2023-11-21 12:54:38,643 INFO    SenderThread:2481648 [dir_watcher.py:finish():402] scan save: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/wandb-metadata.json wandb-metadata.json
+2023-11-21 12:54:38,643 INFO    SenderThread:2481648 [dir_watcher.py:finish():402] scan save: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/requirements.txt requirements.txt
+2023-11-21 12:54:38,644 INFO    SenderThread:2481648 [dir_watcher.py:finish():402] scan save: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/wandb-summary.json wandb-summary.json
+2023-11-21 12:54:38,644 INFO    SenderThread:2481648 [dir_watcher.py:finish():402] scan save: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/output.log output.log
+2023-11-21 12:54:38,647 INFO    SenderThread:2481648 [dir_watcher.py:finish():402] scan save: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/config.yaml config.yaml
+2023-11-21 12:54:38,650 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 10
+2023-11-21 12:54:38,650 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:38,650 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 10
+2023-11-21 12:54:38,651 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:38,651 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 10
+2023-11-21 12:54:38,651 INFO    SenderThread:2481648 [file_pusher.py:finish():175] shutting down file pusher
+2023-11-21 12:54:38,992 INFO    wandb-upload_1:2481648 [upload_job.py:push():131] Uploaded file /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/requirements.txt
+2023-11-21 12:54:39,064 INFO    wandb-upload_2:2481648 [upload_job.py:push():131] Uploaded file /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/wandb-summary.json
+2023-11-21 12:54:39,181 INFO    wandb-upload_4:2481648 [upload_job.py:push():131] Uploaded file /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/config.yaml
+2023-11-21 12:54:39,195 INFO    wandb-upload_3:2481648 [upload_job.py:push():131] Uploaded file /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/output.log
+2023-11-21 12:54:39,207 INFO    wandb-upload_0:2481648 [upload_job.py:push():131] Uploaded file /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/files/conda-environment.yaml
+2023-11-21 12:54:39,407 INFO    Thread-11 (_thread_body):2481648 [sender.py:transition_state():613] send defer: 11
+2023-11-21 12:54:39,407 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:39,407 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 11
+2023-11-21 12:54:39,408 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:39,408 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 11
+2023-11-21 12:54:39,408 INFO    SenderThread:2481648 [file_pusher.py:join():181] waiting for file pusher
+2023-11-21 12:54:39,408 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 12
+2023-11-21 12:54:39,408 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:39,409 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 12
+2023-11-21 12:54:39,409 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:39,409 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 12
+2023-11-21 12:54:39,409 INFO    SenderThread:2481648 [file_stream.py:finish():595] file stream finish called
+2023-11-21 12:54:39,634 INFO    SenderThread:2481648 [file_stream.py:finish():599] file stream finish is done
+2023-11-21 12:54:39,634 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 13
+2023-11-21 12:54:39,634 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:39,634 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 13
+2023-11-21 12:54:39,634 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:39,635 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 13
+2023-11-21 12:54:39,635 INFO    SenderThread:2481648 [sender.py:transition_state():613] send defer: 14
+2023-11-21 12:54:39,635 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: defer
+2023-11-21 12:54:39,635 INFO    HandlerThread:2481648 [handler.py:handle_request_defer():172] handle defer: 14
+2023-11-21 12:54:39,635 DEBUG   SenderThread:2481648 [sender.py:send():380] send: final
+2023-11-21 12:54:39,636 DEBUG   SenderThread:2481648 [sender.py:send():380] send: footer
+2023-11-21 12:54:39,636 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: defer
+2023-11-21 12:54:39,636 INFO    SenderThread:2481648 [sender.py:send_request_defer():609] handle sender defer: 14
+2023-11-21 12:54:39,636 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: poll_exit
+2023-11-21 12:54:39,637 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: poll_exit
+2023-11-21 12:54:39,637 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: server_info
+2023-11-21 12:54:39,637 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: get_summary
+2023-11-21 12:54:39,638 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: server_info
+2023-11-21 12:54:39,641 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: sampled_history
+2023-11-21 12:54:39,641 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: internal_messages
+2023-11-21 12:54:39,641 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: job_info
+2023-11-21 12:54:39,770 DEBUG   SenderThread:2481648 [sender.py:send_request():407] send_request: job_info
+2023-11-21 12:54:39,771 INFO    MainThread:2481648 [wandb_run.py:_footer_history_summary_info():3760] rendering history
+2023-11-21 12:54:39,771 INFO    MainThread:2481648 [wandb_run.py:_footer_history_summary_info():3792] rendering summary
+2023-11-21 12:54:39,771 INFO    MainThread:2481648 [wandb_run.py:_footer_sync_info():3719] logging synced files
+2023-11-21 12:54:39,771 DEBUG   HandlerThread:2481648 [handler.py:handle_request():146] handle_request: shutdown
+2023-11-21 12:54:39,772 INFO    HandlerThread:2481648 [handler.py:finish():866] shutting down handler
+2023-11-21 12:54:40,642 INFO    WriterThread:2481648 [datastore.py:close():294] close: /sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/wandb/run-20231121_125433-e2fc3ita/run-e2fc3ita.wandb
+2023-11-21 12:54:40,771 INFO    SenderThread:2481648 [sender.py:finish():1536] shutting down sender
+2023-11-21 12:54:40,771 INFO    SenderThread:2481648 [file_pusher.py:finish():175] shutting down file pusher
+2023-11-21 12:54:40,771 INFO    SenderThread:2481648 [file_pusher.py:join():181] waiting for file pusher

@@ -1,0 +1,45 @@
+  0%|                                                                                                                        | 0/7808 [00:00<?, ?it/s]Traceback (most recent call last):
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/transformers/tokenization_utils_base.py", line 748, in convert_to_tensors
+    tensor = as_tensor(value)
+             ^^^^^^^^^^^^^^^^
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/transformers/tokenization_utils_base.py", line 720, in as_tensor
+    return torch.tensor(value)
+           ^^^^^^^^^^^^^^^^^^^
+ValueError: expected sequence of length 175 at dim 1 (got 182)
+The above exception was the direct cause of the following exception:
+Traceback (most recent call last):
+  File "/sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/training/train.py", line 357, in <module>
+    main()
+  File "/sailhome/jphilipp/research_projects/social_tuning/manipulativeLMs/training/train.py", line 315, in main
+    trainer.train()
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/transformers/trainer.py", line 1555, in train
+    return inner_training_loop(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/transformers/trainer.py", line 1838, in _inner_training_loop
+    for step, inputs in enumerate(epoch_iterator):
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/accelerate/data_loader.py", line 451, in __iter__
+    current_batch = next(dataloader_iter)
+                    ^^^^^^^^^^^^^^^^^^^^^
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 630, in __next__
+    data = self._next_data()
+           ^^^^^^^^^^^^^^^^^
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/torch/utils/data/dataloader.py", line 674, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/torch/utils/data/_utils/fetch.py", line 54, in fetch
+    return self.collate_fn(data)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/transformers/data/data_collator.py", line 45, in __call__
+    return self.torch_call(features)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/transformers/data/data_collator.py", line 732, in torch_call
+    batch = self.tokenizer.pad(examples, return_tensors="pt", pad_to_multiple_of=self.pad_to_multiple_of)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/transformers/tokenization_utils_base.py", line 3295, in pad
+    return BatchEncoding(batch_outputs, tensor_type=return_tensors)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/transformers/tokenization_utils_base.py", line 223, in __init__
+    self.convert_to_tensors(tensor_type=tensor_type, prepend_batch_axis=prepend_batch_axis)
+  File "/scr/jphilipp/miniconda3/lib/python3.11/site-packages/transformers/tokenization_utils_base.py", line 764, in convert_to_tensors
+    raise ValueError(
+ValueError: Unable to create tensor, you should probably activate truncation and/or padding with 'padding=True' 'truncation=True' to have batched tensors with the same length. Perhaps your features (`labels` in this case) have excessive nesting (inputs type `list` where type `int` is expected).
