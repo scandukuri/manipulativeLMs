@@ -7,7 +7,7 @@ from peft import (
     get_peft_model_state_dict,
 )
 from datasets import Features, Value, Dataset, DatasetDict
-from transformers import LlamaForCausalLM, LlamaTokenizer, AutoTokenizer, LlamaForCausalLM
+from transformers import LlamaForCausalLM, LlamaTokenizer, AutoTokenizer, AutoModelForCausalLM
 
 
 
@@ -18,6 +18,8 @@ LORA_DROPOUT = 0.05
 TARGET_MODULES = [
     "q_proj",
     "v_proj",
+    "k_proj",
+    "o_proj"
 ]
 
 # Weights and Biases Reporting
@@ -107,12 +109,12 @@ def main():
     parser.add_argument('--node_dir', type=str, default='/scr/jphilipp/manipulativeLM-nodecontents/', help='path to all data or model directories on the node (parent directory for subdirectories like pretrained_models, rawdata, output_models etc)')
     parser.add_argument('--pretrained_models_subdir', type=str, default='pretrained_models/', help='subpath to pretrained models within the compute node directory')
     parser.add_argument('--output_models_subdir', type=str, default='output_models/', help='subpath to output models within the compute node directory')
-    parser.add_argument('--rawdata_subdir', type=str, default='rawdata/', help='subpath to raw training data within the compute node directory')
+    parser.add_argument('--rawdata_subdir', type=str, default='rawdata/normbank/normbank.csv', help='subpath to raw training data within the compute node directory')
     parser.add_argument('--processeddata_subdir', type=str, default='processeddata/', help='subpath to processed data generated during training flow within the compute node directory')
-    parser.add_argument('--model_checkpoint', type=str, default='better-base', choices=['gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b', 'better-base', '7B'], help='subpath within pretrained directory to hf style model directory')
-    parser.add_argument('--tokenizer_checkpoint', type=str, default='better-base', choices=['gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b', 'better-base', '7B'], help='subpath within pretrained directory to hf style model directory')
+    parser.add_argument('--model_checkpoint', type=str, default='better-base', choices=['TinyStories-1M', 'mistralai/Mistral-7B-Instruct-v0.1', 'gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b', 'better-base', '7B'], help='subpath within pretrained directory to hf style model directory')
+    parser.add_argument('--tokenizer_checkpoint', type=str, default='better-base', choices=['TinyStories-1M', 'mistralai/Mistral-7B-Instruct-v0.1', 'gpt2', 't5-small', 'facebook/bart-large', 'alpaca_7b', 'better-base', '7B'], help='subpath within pretrained directory to hf style model directory')
     parser.add_argument('--architecture', default='causal-lm', choices=['seq2seq', 'causal-lm'])
-    parser.add_argument('--model_output', type=str, help = 'subpath under args.output_models_subdir to directory for outputting finetuned model weights and config. Not optional!')
+    parser.add_argument('--model_output', default='FT_TEST', type=str, help = 'subpath under args.output_models_subdir to directory for outputting finetuned model weights and config. Not optional!')
     parser.add_argument('--seed', type=int, default=1, help='random seed for replicability')
     parser.add_argument('--format_string', type=str, default="setting [BEHAVIOR] behavior [NORM] norm [CONSTRAINTS] ~ constraints", help='how to format the dataset')
     parser.add_argument('--source_name', type=str, default='setting-behavior', help='the name of the source column to write in the out file')
@@ -123,7 +125,7 @@ def main():
     parser.add_argument('--epochs', type=int, default=1)  # adjusted from 20 -> 1 for generation task
     parser.add_argument('--save_steps', type=int, default=1000)
     parser.add_argument('--lr', type=float, default=3e-5)
-    parser.add_argument('--beams', type=int, default=0)
+    parser.add_argument('--beams', type=int, default=1)
     parser.add_argument('--temperature', type=float, default=1.0)
     parser.add_argument('--top_p', type=float, default=0)
     parser.add_argument('--top_k', type=int, default=0)
@@ -140,7 +142,7 @@ def main():
     
     # configure for architecture
     if args.architecture == '':
-        if 'gpt' in args.model_checkpoint or 'alpaca' in args.model_checkpoint:  # adjust when adding new causal-lm types
+        if 'gpt' in args.model_checkpoint or 'alpaca' in args.model_checkpoint or 'TinyStories' in args.model_checkpoint:  # adjust when adding new causal-lm types
             args.architecture = 'causal-lm'
         elif 'bart' in args.model_checkpoint or 't5' in args.model_checkpoint:
             args.architecture = 'seq2seq'
@@ -149,7 +151,7 @@ def main():
     
     # prepare out directory
     MODEL_DIR = os.path.join(args.node_dir, args.model_checkpoint)
-   
+
 
     # read data
     df = pd.read_csv(os.path.join(args.node_dir, args.rawdata_subdir))
@@ -184,7 +186,7 @@ def main():
     test_pd = pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/test.csv'))
     dev_pd = pd.read_csv(os.path.join(args.node_dir, args.processeddata_subdir, 'tmp/dev.csv'))
     data_pd = {
-        "train": train_pd.head(len(train_pd) - len(train_pd) % args.batchsize), 
+       "train": train_pd.head(len(train_pd) - len(train_pd) % args.batchsize), 
         "test": test_pd.head(len(test_pd) - len(test_pd) % args.batchsize), 
         "validation": dev_pd.head(len(dev_pd) - len(dev_pd) % args.batchsize)}
 
@@ -195,10 +197,10 @@ def main():
     dataset = DatasetDict({'train': dataset_train,'test': dataset_test,'validation': dataset_validation})
     # model setup
     AutoModel = AutoModelForCausalLM if (args.architecture == 'causal-lm') else AutoModelForSeq2SeqLM
-    model = LlamaForCausalLM.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.model_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-    tokenizer = LlamaTokenizer.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.tokenizer_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
-   
+    model = AutoModelForCausalLM.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.model_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
+    tokenizer = AutoTokenizer.from_pretrained(os.path.join(args.node_dir, args.pretrained_models_subdir, args.tokenizer_checkpoint), cache_dir='/scr/jphilipp/manipulativeLM-nodecontents')
     
+
     # add special tokens to tokenizer
     special_tokens = list(
         set(
@@ -217,14 +219,14 @@ def main():
     tokenizer.pad_token = "<pad>"
     tokenizer.eos_token = "<eos>" 
     tokenizer.add_tokens(special_tokens)
+    tokenizer.padding_side = 'right'
+
     model.resize_token_embeddings(len(tokenizer))
     #init_attribute_embeddings(model, tokenizer, special_tokens)
     args.pad_token_id = tokenizer.pad_token_id
-    
     tokenize_format_string = args.format_string.replace("~", "") if args.architecture == 'causal-lm' else args.format_string
     tokenized_datasets = dataset.map(lambda x: preprocess(x, tokenizer, tokenize_format_string), batched=True, batch_size=512)
     
-    #tokenized_datasets = tokenized_datasets.remove_columns(dataset_train.column_names)
     print('training sample input', tokenizer.decode(pd.DataFrame(tokenized_datasets['train']).iloc[0]['input_ids'],skip_special_tokens=False) )
     try:
         print('training sample target', tokenizer.decode(pd.DataFrame(tokenized_datasets['train']).iloc[0]['labels'],skip_special_tokens=False) )
@@ -246,7 +248,7 @@ def main():
         learning_rate=args.lr,
         per_device_train_batch_size=args.microbatchsize,
         per_device_eval_batch_size=args.microbatchsize,
-        gradient_accumulation_steps=args.batchsize//args.microbatchsize,  # check on this again later
+        gradient_accumulation_steps=1, 
         weight_decay=args.weight_decay,
         save_total_limit=args.save_total_limit,
         num_train_epochs=args.epochs,
@@ -254,7 +256,8 @@ def main():
         seed=args.seed,
         save_strategy='steps',
         save_steps=args.save_steps,
-        report_to="wandb"
+        report_to="wandb",
+        ddp_find_unused_parameters=False
     )
     
     ## LoRA configuration with hyperparameters
@@ -304,10 +307,12 @@ def main():
             data_collator=data_collator,
             tokenizer=tokenizer
         )
-    
+
     trainer.train()
        
     trainer.save_model(os.path.join(args.node_dir, args.output_models_subdir, args.model_output))
+    #peft model saved at os.path.join(args.node_dir, args.output_models_subdir, args.model_output)
+    model = model.merge_and_unload()
 
     # tokenize again if using causal-lm because before, the test set did not include targets
     if args.architecture == 'causal-lm':
@@ -325,7 +330,7 @@ def main():
     else:
         out_df[args.target_name + '_generated'] = decode(args, 
                                                          out_df, 
-                                                         trainer.model, 
+                                                         model, 
                                                          tokenizer,
                                                          remove_history=(args.architecture == 'causal-lm'),
                                                          skip_special_tokens=True
@@ -335,6 +340,7 @@ def main():
     with open(os.path.join(os.path.join(args.node_dir, args.output_models_subdir, args.model_output), 'format_string.txt'), 'w') as outfile:
         outfile.write(args.format_string)
         
+    nltk.download('punkt')
     results = final_compute_metrics(out_df[args.target_name + '_generated'].values, 
                               out_df[args.target_name].values, 
                               metric, metric2, tokenizer)
@@ -342,7 +348,6 @@ def main():
     fn = os.path.join(os.path.join(args.node_dir, args.output_models_subdir, args.model_output), f'results_beams{args.beams}_p{args.top_p}_k{args.top_k}_temp{args.temperature}.json')
     with open(fn, 'w') as outfile:
         json.dump(results, outfile)
-        
     torch.save(args, os.path.join(os.path.join(args.node_dir, args.output_models_subdir, args.model_output), "training_args.bin"))
 
 

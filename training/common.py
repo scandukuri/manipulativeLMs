@@ -26,7 +26,7 @@ def set_seed(seed):
 
 
 def tokenize(strings, tokenizer, eos_id=None):
-    tokenized_list = tokenizer(strings, return_tensors="pt", padding='longest', truncation=True, max_length=tokenizer.model_max_length)
+    tokenized_list = tokenizer(strings, return_tensors="pt", padding='max_length', truncation=True, max_length=256)
     input_ids = labels = list(tokenized_list['input_ids'])
     input_ids_lens = labels_lens = [label.ne(tokenizer.pad_token_id).sum().item() for label in labels]
     return dict(input_ids=input_ids, labels=labels, input_ids_lens=input_ids_lens, labels_lens=labels_lens, attention_masks=tokenized_list['attention_mask'])
@@ -44,14 +44,15 @@ def preprocess(examples, tokenizer, format_string):
     examples_tokenized, sources_tokenized = [tokenize(strings, tokenizer) for strings in (examples, source)]
     input_ids = examples_tokenized["input_ids"]
     labels = copy.deepcopy(input_ids)
-    for label, source_len in zip(labels, sources_tokenized["input_ids_lens"]):
-        label[:source_len] = -100
+    for label, source_len, example_len in zip(labels, sources_tokenized["input_ids_lens"], examples_tokenized['labels_lens']):
+        label[:source_len - 1] = -100
+        #label[example_len], label[example_len + 1:] = tokenizer.eos_token_id, -100  # teach model to predict end of sequence token
+        label[example_len:] = -100  # don't teach end of sequence prediction
     attention_masks = examples_tokenized['attention_masks']
-    #attention_masks = sources_tokenized['attention_masks']  ## Which one is it? i think the above one...
+    
     if len(input_ids) != len(labels) or len(input_ids) != len(attention_masks) or set([len(id) for id in input_ids]) != set([len(id) for id in labels]) or set([len(id) for id in input_ids]) != set([len(id) for id in attention_masks]):
         raise Exception("Size mismatch")
-    return dict(input_ids=input_ids, labels=labels)
-    #return dict(input_ids=input_ids, labels=labels, attention_masks=attention_masks)
+    return dict(input_ids=input_ids, labels=labels, attention_masks=attention_masks)
 
 
 def decode(args, df, model, tokenizer, skip_special_tokens=True, remove_history=False):
@@ -63,16 +64,15 @@ def decode(args, df, model, tokenizer, skip_special_tokens=True, remove_history=
     
     for _, row in df.iterrows():
         input_ids = torch.tensor([row['input_ids']], device='cuda')
-        lst
         out = model.generate(
                 input_ids,
                 do_sample=args.beams == 0,
                 max_length=args.maxlen,
                 temperature=args.temperature,
-                top_p=args.top_p if args.top_p > 0 else None,
-                top_k=args.top_k if args.top_k > 0 else None,
-                num_beams=args.beams if args.beams > 0 else None,
-                early_stopping=True,
+                #top_p=args.top_p if args.top_p > 0 else None,
+                #top_k=args.top_k if args.top_k > 0 else None,
+                #num_beams=args.beams if args.beams > 0 else None,
+                early_stopping=True if args.beams > 1 else False,
                 pad_token_id=50256,
                 no_repeat_ngram_size=3,
                 eos_token_id=eos_token_id
