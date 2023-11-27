@@ -2,9 +2,9 @@
 #SBATCH --account=cocoflops
 #SBATCH --partition=cocoflops
 #SBATCH -w cocoflops-hgx-1
-#SBATCH --gres=gpu:2  # Requesting one GPU
-#SBATCH --mem=256G
-#SBATCH --cpus-per-task=48
+#SBATCH --gres=gpu:1  # Requesting one GPU
+#SBATCH --mem=128G
+#SBATCH --cpus-per-task=20
 #SBATCH --time=48:00:00
 #SBATCH --output=job_output.%j.out
 #SBATCH --error=job_output.%j.err
@@ -22,7 +22,7 @@ cd ~/research_projects/social_tuning/manipulativeLMs/training
 
 # todo: change confid below to make input output commands shorter
 torchrun --standalone \
-    --nproc_per_node=2 ~/research_projects/social_tuning/manipulativeLMs/training/train.py \
+    --nproc_per_node=1 ~/research_projects/social_tuning/manipulativeLMs/training/train.py \
     --node_dir '/scr/jphilipp/manipulativeLM-nodecontents/' \
     --pretrained_models_subdir 'pretrained_models/' \
     --output_models_subdir 'output_models/' \
@@ -31,4 +31,4 @@ torchrun --standalone \
     --model_checkpoint 'alpaca_7b' --tokenizer_checkpoint '7B' --architecture 'causal-lm' \
     --model_output 'alpaca_7b_normbankFT' \
     --save_total_limit 10 --save_steps 1000 \
-    --microbatchsize 8
+    --microbatchsize 16
